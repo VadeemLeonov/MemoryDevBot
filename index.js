@@ -23,7 +23,8 @@ class User {
         this.queryData = 'six',
         this.time = 4000,
         this.num = 1,
-        this.msgId = 1
+        this.msgId = 1,
+        this.count = 0
     }
 };
 
@@ -33,15 +34,6 @@ class Btns {
         this.callback_data = key
     }
 }
-
-// Проверяем есть ли у нас этот участник, возвращает id участника или undefined
-/* let getUser = (userId) => {
-    try {
-        return users.filter( user => user.user === userId )[0];
-    } catch(err) {
-        console.error(err);
-    }
-}; */
 
 // Добавляем участника
 let addUser = (userId) => {
@@ -55,22 +47,25 @@ let addUser = (userId) => {
     } 
 };
 
+// Получение рандомного стикера
 let arrayRandElement = function (arr) {
     let rand = Math.floor(Math.random() * arr.length);
     return arr[rand];
-}
+};
+
 
 // Получаем рандомное число с заданным колличеством знаков
 let getRandomInt = (num) => {
     let x = String(Math.floor(Math.random() * 10000000000000));
     return x.slice(0, (num));
-}
+};
 
 // Получаем число в соответствии с выбранным колличеством знаков
 let getNunber = (queryData, ctx, time) => {
     try {
         switch(queryData) {
             case '1':
+                users[ctx.from.id].count = 0;
                 ctx.telegram.editMessageText( ctx.chat.id, users[ctx.update.callback_query.from.id].msgId, users[ctx.update.callback_query.from.id].msgId, users[ctx.update.callback_query.from.id].num);
                 break;
             case '3':
@@ -125,7 +120,7 @@ let getNunber = (queryData, ctx, time) => {
     }  catch(err) {
         console.error(err);
     }  
-}
+};
 
 // Отправляет участнику рандомное число, затем прячет его
 let msg = function (ctx, n, t) {
@@ -145,7 +140,21 @@ let msg = function (ctx, n, t) {
     }  catch(err) {
         console.error(err);
     }
-}
+};
+
+//Ответ бота на введенное число
+let botAnswer = function (ctx, txt1, txt2, arr) {
+    ctx.telegram.sendAnimation(ctx.from.id, arrayRandElement(arr))
+    .then(() => {
+        ctx.telegram.sendMessage(ctx.from.id, `${txt1}`, {
+            reply_markup: JSON.stringify({
+                inline_keyboard: [
+                    [new Btns(`${txt2}`, users[ctx.from.id].queryData)]
+                ]
+            })
+        })
+    })
+};
 
 // Вызывается при получении ботом сообщения
 bot.on('message', (ctx) => {
@@ -153,27 +162,20 @@ bot.on('message', (ctx) => {
     //console.log(ctx.update.message.sticker.file_id)
     try {
         if (ctx.message.text == users[ctx.from.id].num) {
-            ctx.telegram.sendAnimation(ctx.from.id, arrayRandElement(ok))
-            .then(() => {
-                ctx.telegram.sendMessage(ctx.from.id, 'Верно!', {
-                    reply_markup: JSON.stringify({
-                        inline_keyboard: [
-                            [new Btns('Следующее', users[ctx.from.id].queryData)]
-                        ]
-                    })
+            users[ctx.from.id].count++;
+            if (users[ctx.from.id].count > 0 && users[ctx.from.id].count % 5 === 0) {
+                ctx.telegram.sendAnimation(ctx.from.id, 'CAACAgIAAxkBAANUYwzR45OIBUZQBV9QRfp5ohl-wp0AAkcAAyNZzgwL2iA_LBzv5SkE')
+                .then(() => {
+                    ctx.telegram.sendMessage(ctx.from.id, `Зачет! ${users[ctx.from.id].count} правильных ответов подряд!!!`)
+                    .then(botAnswer(ctx, 'Верно!', 'Следующее', ok));
                 })
-            })
+                
+            } else {
+                botAnswer(ctx, 'Верно!', 'Следующее', ok);
+            }
         } else {
-            ctx.telegram.sendAnimation(ctx.from.id, arrayRandElement(nope))
-            .then(() => {
-                ctx.telegram.sendMessage(ctx.from.id, 'Ответ не правильный, дерзай ещё раз или пропускай', {
-                    reply_markup: JSON.stringify({
-                        inline_keyboard: [
-                            [new Btns('Пропустить', users[ctx.from.id].queryData)]
-                        ]
-                    })
-                })
-            })
+            users[ctx.from.id].count = 0;
+            botAnswer(ctx, 'Ответ не правильный, дерзай ещё раз или пропускай', 'Пропустить', nope);
         }
     } catch (err) {
         console.error(err);
