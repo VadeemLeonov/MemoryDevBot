@@ -24,9 +24,14 @@ class User {
         this.time = 4000,
         this.num = 1,
         this.msgId = 1,
-        this.count = 0
+        this.count = 0,
+        this.record = 0
     }
-};
+
+    setRecord() {
+        this.record < this.count ? this.record = this.count : false;
+    }
+}
 
 class Btns {
     constructor(text, key) {
@@ -163,13 +168,13 @@ bot.on('message', (ctx) => {
     try {
         if (ctx.message.text == users[ctx.from.id].num) {
             users[ctx.from.id].count++;
+            users[ctx.from.id].setRecord();
             if (users[ctx.from.id].count > 0 && users[ctx.from.id].count % 5 === 0) {
                 ctx.telegram.sendAnimation(ctx.from.id, 'CAACAgIAAxkBAANUYwzR45OIBUZQBV9QRfp5ohl-wp0AAkcAAyNZzgwL2iA_LBzv5SkE')
                 .then(() => {
                     ctx.telegram.sendMessage(ctx.from.id, `Зачет! ${users[ctx.from.id].count} правильных ответов подряд!!!`)
                     .then(botAnswer(ctx, 'Верно!', 'Следующее', ok));
                 })
-                
             } else {
                 botAnswer(ctx, 'Верно!', 'Следующее', ok);
             }

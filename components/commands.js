@@ -54,7 +54,7 @@ try {
         } else {
             return;
         }
-    })
+    });
     
     // Отправляет сообщение с выбором времени показа числа
     commands.command('time', (ctx) => {
@@ -74,7 +74,12 @@ try {
         } else {
             return;
         }
-    })
+    });
+
+    //Показывает рекорд
+    commands.command('record', (ctx) => {
+        ctx.telegram.sendMessage(ctx.from.id, users[ctx.from.id].record);
+    });
     
     //Показывает колличество участников
     commands.command('users', (ctx) => {
@@ -82,7 +87,7 @@ try {
             addUser(ctx.from.id);
         } 
         ctx.telegram.sendMessage(ctx.from.id, amount);
-    })
+    });
 } catch (err) {
     console.error(err);
 }
