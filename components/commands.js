@@ -78,7 +78,7 @@ try {
 
     //Показывает рекорд
     commands.command('record', (ctx) => {
-        ctx.telegram.sendMessage(ctx.from.id, users[ctx.from.id].record);
+        ctx.telegram.sendMessage(ctx.from.id, `Твой личный рекорд правильных ответов подряд: ${users[ctx.from.id].record}`);
     });
     
     //Показывает колличество участников

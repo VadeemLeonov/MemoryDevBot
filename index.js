@@ -20,7 +20,7 @@ const users = {};
 class User {
     constructor(fromId) {
         this.user = fromId,
-        this.queryData = 'six',
+        this.queryData = 6,
         this.time = 4000,
         this.num = 1,
         this.msgId = 1,
@@ -28,8 +28,89 @@ class User {
         this.record = 0
     }
 
+    // Записывает рекорд
     setRecord() {
         this.record < this.count ? this.record = this.count : false;
+    }
+
+    // Отправляет участнику рандомное число, затем прячет его
+    msg(ctx) {
+        this.num = this.getRandomInt();
+        ctx.telegram.sendMessage(this.user, this.num)
+        .then((data) => { this.msgId = data.message_id })
+        .then( setTimeout(() => {
+                ctx.telegram.editMessageText( this.user, this.msgId, this.msgId, 'Жги!').then((data) => {
+                ctx.telegram.editMessageReplyMarkup( this.user, this.msgId, this.msgId, JSON.stringify({
+                    inline_keyboard: [
+                        [new Btns('Подсмотреть', 1)]
+                    ]})
+                )})
+            }, this.time)
+        );
+    }
+
+    // Получаем рандомное число с заданным колличеством знаков
+    getRandomInt() {
+        let x = String(Math.floor(Math.random() * 10000000000000));
+        return x.slice(0, this.queryData);
+    }
+
+    // Получаем число в соответствии с выбранным колличеством знаков
+    getNunber(ctx, queryData) {
+        switch(queryData) {
+            case '1':
+                this.count = 0;
+                ctx.telegram.editMessageText( this.user, this.msgId, this.msgId, this.num);
+                break;
+            case '3':
+                this.queryData = 3;
+                this.msg(ctx);
+                break;
+            case '4':
+                this.queryData = 4;
+                this.msg(ctx);
+                break;
+            case '5':
+                this.queryData = 5;
+                this.msg(ctx);
+                break;
+            case '6':
+                this.queryData = 6;
+                this.msg(ctx);
+                break;
+            case '7':
+                this.queryData = 7;
+                this.msg(ctx);
+                break;
+            case '8':
+                this.queryData = 8;
+                this.msg(ctx);
+                break;
+            case '01':
+                this.time = 1000;
+                this.msg(ctx);
+                break;
+            case '02':
+                this.time = 2000;
+                this.msg(ctx);
+                break;
+            case '03':
+                this.time = 3000;
+                this.msg(ctx);
+                break;
+            case '04':
+                this.time = 4000;
+                this.msg(ctx);
+                break;
+            case '05':
+                this.time = 5000;
+                this.msg(ctx);
+                break;
+            case '06':
+                this.time = 6000;
+                this.msg(ctx);
+                break;
+        }
     }
 }
 
@@ -56,95 +137,6 @@ let addUser = (userId) => {
 let arrayRandElement = function (arr) {
     let rand = Math.floor(Math.random() * arr.length);
     return arr[rand];
-};
-
-
-// Получаем рандомное число с заданным колличеством знаков
-let getRandomInt = (num) => {
-    let x = String(Math.floor(Math.random() * 10000000000000));
-    return x.slice(0, (num));
-};
-
-// Получаем число в соответствии с выбранным колличеством знаков
-let getNunber = (queryData, ctx, time) => {
-    try {
-        switch(queryData) {
-            case '1':
-                users[ctx.from.id].count = 0;
-                ctx.telegram.editMessageText( ctx.chat.id, users[ctx.update.callback_query.from.id].msgId, users[ctx.update.callback_query.from.id].msgId, users[ctx.update.callback_query.from.id].num);
-                break;
-            case '3':
-                users[ctx.update.callback_query.from.id].queryData = 3;
-                msg(ctx, 3, time);
-                break;
-            case '4':
-                users[ctx.update.callback_query.from.id].queryData = 4;
-                msg(ctx, 4, time);
-                break;
-            case '5':
-                users[ctx.update.callback_query.from.id].queryData = 5;
-                msg(ctx, 5, time);
-                break;
-            case '6':
-                users[ctx.update.callback_query.from.id].queryData = 6;
-                msg(ctx, 6, time);
-                break;
-            case '7':
-                users[ctx.update.callback_query.from.id].queryData = 7;
-                msg(ctx, 7, time);
-                break;
-            case '8':
-                users[ctx.update.callback_query.from.id].queryData = 8;
-                msg(ctx, 8, time);
-                break;
-            case '01':
-                users[ctx.update.callback_query.from.id].time = 1000;
-                msg(ctx, users[ctx.update.callback_query.from.id].queryData, 1000);
-                break;
-            case '02':
-                users[ctx.update.callback_query.from.id].time = 2000;
-                msg(ctx, users[ctx.update.callback_query.from.id].queryData, 2000);
-                break;
-            case '03':
-                users[ctx.update.callback_query.from.id].time = 3000;
-                msg(ctx, users[ctx.update.callback_query.from.id].queryData, 3000);
-                break;
-            case '04':
-                users[ctx.update.callback_query.from.id].time = 4000;
-                msg(ctx, users[ctx.update.callback_query.from.id].queryData, 4000);
-                break;
-            case '05':
-                users[ctx.update.callback_query.from.id].time = 5000;
-                msg(ctx, users[ctx.update.callback_query.from.id].queryData, 5000);
-                break;
-            case '06':
-                users[ctx.update.callback_query.from.id].time = 6000;
-                msg(ctx, users[ctx.update.callback_query.from.id].queryData, 6000);
-                break;
-        }
-    }  catch(err) {
-        console.error(err);
-    }  
-};
-
-// Отправляет участнику рандомное число, затем прячет его
-let msg = function (ctx, n, t) {
-    try {
-        users[ctx.from.id].num = getRandomInt(n);
-        ctx.telegram.sendMessage(ctx.from.id, users[ctx.from.id].num)
-        .then((data) => { users[ctx.from.id].msgId = data.message_id  })
-        .then( setTimeout(() => {
-                ctx.telegram.editMessageText( ctx.chat.id, users[ctx.from.id].msgId, users[ctx.from.id].msgId, 'Жги!').then((data) => {
-                ctx.telegram.editMessageReplyMarkup( ctx.chat.id, users[ctx.from.id].msgId, users[ctx.from.id].msgId, JSON.stringify({
-                    inline_keyboard: [
-                        [new Btns('Подсмотреть', 1)]
-                    ]})
-                )})
-            }, t)
-        );
-    }  catch(err) {
-        console.error(err);
-    }
 };
 
 //Ответ бота на введенное число
@@ -192,7 +184,7 @@ bot.on('callback_query', async (ctx) => {
     try {
         await ctx.answerCbQuery();
         if (ifStart(ctx)) {
-            getNunber(ctx.update.callback_query.data, ctx, users[ctx.from.id].time);
+            users[ctx.from.id].getNunber(ctx, ctx.update.callback_query.data);
         } else {
             return;
         }
