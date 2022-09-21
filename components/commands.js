@@ -19,7 +19,7 @@ let choice = (ctx) => {
     }
 }
 
-// Проверяем былыли выполнена команда старт (другой стикер CAACAgIAAxkBAAID4WL_aJSGa_Vr2E4_eWlElp-ynwTgAAKfAQACZf-SCjTjjy3AnExtKQQ)
+// Проверяем былали выполнена команда старт (другой стикер CAACAgIAAxkBAAID4WL_aJSGa_Vr2E4_eWlElp-ynwTgAAKfAQACZf-SCjTjjy3AnExtKQQ)
 let ifStart = (ctx) => {
     try {
         if (users[ctx.from.id] === undefined) {
@@ -36,28 +36,36 @@ let ifStart = (ctx) => {
     }
 }
 
-try {
-    // Обработка команды старт
-    commands.start(ctx => {
+// Обработка команды старт
+commands.start(ctx => {
+    try {
         ctx.replyWithPhoto({ source: 'logo.jpg' }, { caption: 'Смотри и запоминай!!!' })
         .then(() => {
             choice(ctx);
             // Создаем участника (если его нет)
             addUser(ctx.from.id);
         })
-    });
+    } catch(err) {
+        console.error(err);
+    }
+});
 
-    //Выбор колличества знаков числа
-    commands.command('choise', (ctx) => {
+//Выбор колличества знаков числа
+commands.command('choise', (ctx) => {
+    try {
         if (ifStart(ctx)) {
             choice(ctx);
         } else {
             return;
         }
-    });
+    } catch(err) {
+        console.error(err);
+    }
+});
     
-    // Отправляет сообщение с выбором времени показа числа
-    commands.command('time', (ctx) => {
+// Отправляет сообщение с выбором времени показа числа
+commands.command('time', (ctx) => {
+    try {
         if (ifStart(ctx)) {
             // Стикер с параметрами CAACAgIAAxkBAAICaWL-THLy4l3f4ZFkbESb8JAEDE9eAAIeDQACF3oKAAHSw51yX6m0HCkE
             ctx.telegram.sendAnimation(ctx.from.id, 'CAACAgIAAxkBAAIeTWMEocDPfpoFNfDNAi3u_ES5T--OAAJDAAMjWc4MnVXkpOP_4c8pBA')
@@ -74,22 +82,30 @@ try {
         } else {
             return;
         }
-    });
+    } catch(err) {
+        console.error(err);
+    }
+});
 
-    //Показывает рекорд
-    commands.command('record', (ctx) => {
+//Показывает рекорд
+commands.command('record', (ctx) => {
+    try {
         ctx.telegram.sendMessage(ctx.from.id, `Твой личный рекорд правильных ответов подряд: ${users[ctx.from.id].record}`);
-    });
+    } catch(err) {
+        console.error(err);
+    }
+});
     
-    //Показывает колличество участников
-    commands.command('users', (ctx) => {
+//Показывает колличество участников
+commands.command('users', (ctx) => {
+    try {
         if (!users[ctx.from.id]) {
             addUser(ctx.from.id);
         } 
         ctx.telegram.sendMessage(ctx.from.id, amount);
-    });
-} catch (err) {
-    console.error(err);
-}
+    } catch (err) {
+        console.error(err);
+    }
+});
 
 export { commands, ifStart }

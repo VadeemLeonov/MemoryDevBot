@@ -30,15 +30,20 @@ class User {
 
     // Записывает рекорд
     setRecord() {
-        this.record < this.count ? this.record = this.count : false;
+        try {
+            this.record < this.count ? this.record = this.count : false;
+        } catch(err) {
+            console.error(err);
+        }
     }
 
     // Отправляет участнику рандомное число, затем прячет его
     msg(ctx) {
-        this.num = this.getRandomInt();
-        ctx.telegram.sendMessage(this.user, this.num)
-        .then((data) => { this.msgId = data.message_id })
-        .then( setTimeout(() => {
+        try {
+            this.num = this.getRandomInt();
+            ctx.telegram.sendMessage(this.user, this.num)
+            .then((data) => { this.msgId = data.message_id })
+            .then( setTimeout(() => {
                 ctx.telegram.editMessageText( this.user, this.msgId, this.msgId, 'Жги!').then((data) => {
                 ctx.telegram.editMessageReplyMarkup( this.user, this.msgId, this.msgId, JSON.stringify({
                     inline_keyboard: [
@@ -47,69 +52,80 @@ class User {
                 )})
             }, this.time)
         );
+        } catch(err) {
+            console.error(err);
+        }
     }
 
     // Получаем рандомное число с заданным колличеством знаков
     getRandomInt() {
-        let x = String(Math.floor(Math.random() * 10000000000000));
-        return x.slice(0, this.queryData);
+        try {
+            let x = String(Math.floor(Math.random() * 10000000000000));
+            return x.slice(0, this.queryData);
+        } catch(err) {
+            console.error(err);
+        }
     }
 
     // Получаем число в соответствии с выбранным колличеством знаков
     getNunber(ctx, queryData) {
-        switch(queryData) {
-            case '1':
-                this.count = 0;
-                ctx.telegram.editMessageText( this.user, this.msgId, this.msgId, this.num);
-                break;
-            case '3':
-                this.queryData = 3;
-                this.msg(ctx);
-                break;
-            case '4':
-                this.queryData = 4;
-                this.msg(ctx);
-                break;
-            case '5':
-                this.queryData = 5;
-                this.msg(ctx);
-                break;
-            case '6':
-                this.queryData = 6;
-                this.msg(ctx);
-                break;
-            case '7':
-                this.queryData = 7;
-                this.msg(ctx);
-                break;
-            case '8':
-                this.queryData = 8;
-                this.msg(ctx);
-                break;
-            case '01':
-                this.time = 1000;
-                this.msg(ctx);
-                break;
-            case '02':
-                this.time = 2000;
-                this.msg(ctx);
-                break;
-            case '03':
-                this.time = 3000;
-                this.msg(ctx);
-                break;
-            case '04':
-                this.time = 4000;
-                this.msg(ctx);
-                break;
-            case '05':
-                this.time = 5000;
-                this.msg(ctx);
-                break;
-            case '06':
-                this.time = 6000;
-                this.msg(ctx);
-                break;
+        try {
+            switch(queryData) {
+                case '1':
+                    this.count = 0;
+                    ctx.telegram.editMessageText( this.user, this.msgId, this.msgId, this.num);
+                    break;
+                case '3':
+                    this.queryData = 3;
+                    this.msg(ctx);
+                    break;
+                case '4':
+                    this.queryData = 4;
+                    this.msg(ctx);
+                    break;
+                case '5':
+                    this.queryData = 5;
+                    this.msg(ctx);
+                    break;
+                case '6':
+                    this.queryData = 6;
+                    this.msg(ctx);
+                    break;
+                case '7':
+                    this.queryData = 7;
+                    this.msg(ctx);
+                    break;
+                case '8':
+                    this.queryData = 8;
+                    this.msg(ctx);
+                    break;
+                case '01':
+                    this.time = 1000;
+                    this.msg(ctx);
+                    break;
+                case '02':
+                    this.time = 2000;
+                    this.msg(ctx);
+                    break;
+                case '03':
+                    this.time = 3000;
+                    this.msg(ctx);
+                    break;
+                case '04':
+                    this.time = 4000;
+                    this.msg(ctx);
+                    break;
+                case '05':
+                    this.time = 5000;
+                    this.msg(ctx);
+                    break;
+                case '06':
+                    this.time = 6000;
+                    this.msg(ctx);
+                    break;
+            }
+        } catch(err) {
+            console.error(err);
         }
     }
 }
@@ -135,22 +151,30 @@ let addUser = (userId) => {
 
 // Получение рандомного стикера
 let arrayRandElement = function (arr) {
-    let rand = Math.floor(Math.random() * arr.length);
-    return arr[rand];
+    try {
+        let rand = Math.floor(Math.random() * arr.length);
+        return arr[rand];
+    }  catch(err) {
+        console.error(err);
+    }
 };
 
 //Ответ бота на введенное число
 let botAnswer = function (ctx, txt1, txt2, arr) {
-    ctx.telegram.sendAnimation(ctx.from.id, arrayRandElement(arr))
-    .then(() => {
-        ctx.telegram.sendMessage(ctx.from.id, `${txt1}`, {
-            reply_markup: JSON.stringify({
-                inline_keyboard: [
-                    [new Btns(`${txt2}`, users[ctx.from.id].queryData)]
-                ]
+    try {
+        ctx.telegram.sendAnimation(ctx.from.id, arrayRandElement(arr))
+        .then(() => {
+            ctx.telegram.sendMessage(ctx.from.id, `${txt1}`, {
+                reply_markup: JSON.stringify({
+                    inline_keyboard: [
+                        [new Btns(`${txt2}`, users[ctx.from.id].queryData)]
+                    ]
+                })
             })
         })
-    })
+    }  catch(err) {
+        console.error(err);
+    }
 };
 
 // Вызывается при получении ботом сообщения
