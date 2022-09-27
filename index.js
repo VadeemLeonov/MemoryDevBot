@@ -1,11 +1,8 @@
 import 'dotenv/config';
 import { Composer } from 'telegraf';
-import express from 'express';
 import { Telegraf } from 'telegraf';
 import { commands, ifStart } from './components/commands.js';
 import { ok, nope } from './components/stickers.js';
-
-const app = express();
 
 const funcFile = new Composer();
 const bot = new Telegraf(process.env.MBOT_TOKEN);
@@ -13,6 +10,7 @@ bot.use(commands);
 
 // Переменные для сохранения колличества участников
 let amount = 0;
+const players = [];
 
 // Участники
 const users = {};
@@ -182,7 +180,7 @@ bot.on('message', (ctx) => {
     // Это для определения file_id стикера
     //console.log(ctx.update.message.sticker.file_id)
     try {
-        if (ctx.message.text == users[ctx.from.id].num) {
+        if (ifStart(ctx) && ctx.message.text == users[ctx.from.id].num) {
             users[ctx.from.id].count++;
             users[ctx.from.id].setRecord();
             if (users[ctx.from.id].count > 0 && users[ctx.from.id].count % 5 === 0) {
@@ -219,4 +217,4 @@ bot.on('callback_query', async (ctx) => {
 })
 
 bot.launch();
-export { addUser, Btns, amount, users }
+export { addUser, Btns, amount, players, users }

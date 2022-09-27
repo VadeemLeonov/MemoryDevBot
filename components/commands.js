@@ -1,5 +1,5 @@
 import { Composer } from 'telegraf';
-import { addUser, Btns, amount, users } from '../index.js';
+import { addUser, Btns, amount, players,  users } from '../index.js';
 
 const commands = new Composer();
 
@@ -44,6 +44,7 @@ commands.start(ctx => {
             choice(ctx);
             // Создаем участника (если его нет)
             addUser(ctx.from.id);
+            players.push(`${ctx.from.first_name} ${ctx.from.last_name}, ${ctx.from.id}:`);
         })
     } catch(err) {
         console.error(err);
@@ -102,7 +103,7 @@ commands.command('users', (ctx) => {
         if (!users[ctx.from.id]) {
             addUser(ctx.from.id);
         } 
-        ctx.telegram.sendMessage(ctx.from.id, amount);
+        ctx.telegram.sendMessage(ctx.from.id, `Игроков ${amount},  ${players}`);
     } catch (err) {
         console.error(err);
     }
