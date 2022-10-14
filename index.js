@@ -16,7 +16,8 @@ const players = [];
 const users = {};
 
 class User {
-    constructor(fromId) {
+    constructor(fromId, name) {
+        this.userName = name,
         this.user = fromId,
         this.queryData = 6,
         this.time = 4000,
@@ -136,10 +137,10 @@ class Btns {
 }
 
 // Добавляем участника
-let addUser = (userId) => {
+let addUser = (userId, name) => {
     try {
         if (!users[userId]) {
-            users[userId] = new User(userId);
+            users[userId] = new User(userId, name);
             amount++;
         }
     }  catch(err) {

@@ -36,6 +36,10 @@ let ifStart = (ctx) => {
     }
 }
 
+//  Проверяем наличие имени и фамилии
+let first_name = (ctx) => ctx.from.first_name ? ctx.from.first_name : ctx.from.first_name = " ";
+let last_name = (ctx) => ctx.from.last_name ? ctx.from.last_name : ctx.from.last_name = " ";
+
 // Обработка команды старт
 commands.start(ctx => {
     try {
@@ -43,8 +47,8 @@ commands.start(ctx => {
         .then(() => {
             choice(ctx);
             // Создаем участника (если его нет)
-            addUser(ctx.from.id);
-            players.push(`${ctx.from.first_name} ${ctx.from.last_name}, ${ctx.from.id}:`);
+            addUser(ctx.from.id, ctx.from.first_name);
+            players.push(`${first_name(ctx)} ${last_name(ctx)}, ${ctx.from.username}, ${ctx.from.id}:`);
         })
     } catch(err) {
         console.error(err);
@@ -91,17 +95,34 @@ commands.command('time', (ctx) => {
 //Показывает рекорд
 commands.command('record', (ctx) => {
     try {
-        ctx.telegram.sendMessage(ctx.from.id, `Твой личный рекорд правильных ответов подряд: ${users[ctx.from.id].record}`);
+        if (ifStart(ctx)) {
+            ctx.telegram.sendMessage(ctx.from.id, `Твой личный рекорд правильных ответов подряд: ${users[ctx.from.id].record}`);
+        } else {
+            return;
+        }
+    } catch(err) {
+        console.error(err);
+    }
+});
+
+//Показывает достижения
+commands.command('achievements', (ctx) => {
+    try {
+        let arr = Object.keys(users);
+        arr.sort((a, b) => b - a);
+        for (let value of arr) {
+            ctx.telegram.sendMessage(ctx.from.id, `${users[value].userName} рекорд: ${users[value].record}`);
+        };
     } catch(err) {
         console.error(err);
     }
 });
     
-//Показывает колличество участников
+//Показывает колличество участниковa
 commands.command('users', (ctx) => {
     try {
         if (!users[ctx.from.id]) {
-            addUser(ctx.from.id);
+            addUser(ctx.from.id, ctx.from.first_name);
         } 
         ctx.telegram.sendMessage(ctx.from.id, `Игроков ${amount},  ${players}`);
     } catch (err) {
