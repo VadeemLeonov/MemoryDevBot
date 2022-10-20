@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { Composer } from 'telegraf';
 import { Telegraf } from 'telegraf';
-import { commands, ifStart } from './components/commands.js';
+import { commands } from './components/commands.js';
 import { ok, nope } from './components/stickers.js';
 
 const funcFile = new Composer();
@@ -10,14 +10,14 @@ bot.use(commands);
 
 // Переменные для сохранения колличества участников
 let amount = 0;
-const players = [];
 
 // Участники
 const users = {};
 
 class User {
-    constructor(fromId, name) {
-        this.userName = name,
+    constructor(fromId, userName, name) {
+        this.userName = userName,
+        this.name = name,
         this.user = fromId,
         this.queryData = 6,
         this.time = 4000,
@@ -137,11 +137,13 @@ class Btns {
 }
 
 // Добавляем участника
-let addUser = (userId, name) => {
+let addUser = (userId, userName, name) => {
     try {
         if (!users[userId]) {
-            users[userId] = new User(userId, name);
+            users[userId] = new User(userId, userName, name);
             amount++;
+        } else {
+            return true;
         }
     }  catch(err) {
         console.error(err);
@@ -181,7 +183,7 @@ bot.on('message', (ctx) => {
     // Это для определения file_id стикера
     //console.log(ctx.update.message.sticker.file_id)
     try {
-        if (ifStart(ctx) && ctx.message.text == users[ctx.from.id].num) {
+        if (addUser(ctx.from.id, ctx.from.username, ctx.from.first_name) && ctx.message.text == users[ctx.from.id].num) {
             users[ctx.from.id].count++;
             users[ctx.from.id].setRecord();
             if (users[ctx.from.id].count > 0 && users[ctx.from.id].count % 5 === 0) {
@@ -206,16 +208,12 @@ bot.on('message', (ctx) => {
 bot.on('callback_query', async (ctx) => {
     try {
         await ctx.answerCbQuery();
-        if (ifStart(ctx)) {
-            users[ctx.from.id].getNunber(ctx, ctx.update.callback_query.data);
-        } else {
-            return;
-        }
+        addUser(ctx.from.id, ctx.from.username, ctx.from.first_name);
+        users[ctx.from.id].getNunber(ctx, ctx.update.callback_query.data);
     } catch (err) {
         console.error(err);
     }
-    
 })
 
 bot.launch();
-export { addUser, Btns, amount, players, users }
+export { addUser, Btns, amount, users }
