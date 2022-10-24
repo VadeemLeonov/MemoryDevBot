@@ -90,6 +90,10 @@ ${users[value].name} рекорд: ${users[value].record}`);
         console.error(err);
     }
 });
+
+commands.command('help', (ctx) => {
+    ctx.reply(`Замечания и пожелания по развитию игры пишите в наш бот поддержки пользователей: t.me/ExampleSupport_bot`);
+});
     
 //Показывает колличество участников
 commands.command('users', (ctx) => {
@@ -101,7 +105,7 @@ commands.command('users', (ctx) => {
             players.push(`
 ${users[value].name}: ${users[value].userName}`);
         };
-        ctx.telegram.sendMessage(ctx.from.id, `Игроков ${amount},  ${players}`);
+        ctx.telegram.sendMessage(ctx.from.id, `Игроков ${amount}, ${players}`);
     } catch (err) {
         console.error(err);
     }
