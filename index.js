@@ -183,6 +183,7 @@ bot.on('message', (ctx) => {
     // Это для определения file_id стикера
     //console.log(ctx.update.message.sticker.file_id)
     try {
+        addUser(ctx.from.id, ctx.from.username, ctx.from.first_name);
         if (addUser(ctx.from.id, ctx.from.username, ctx.from.first_name) && ctx.message.text == users[ctx.from.id].num) {
             users[ctx.from.id].count++;
             users[ctx.from.id].setRecord();

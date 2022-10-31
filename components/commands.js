@@ -64,6 +64,10 @@ commands.command('time', (ctx) => {
     }
 });
 
+commands.command('help', (ctx) => {
+    ctx.reply(`Замечания и пожелания по развитию игры пишите в наш бот поддержки пользователей: t.me/ExampleSupport_bot`);
+});
+
 //Показывает рекорд
 commands.command('record', (ctx) => {
     try {
@@ -89,10 +93,6 @@ ${users[value].name} рекорд: ${users[value].record}`);
     } catch(err) {
         console.error(err);
     }
-});
-
-commands.command('help', (ctx) => {
-    ctx.reply(`Замечания и пожелания по развитию игры пишите в наш бот поддержки пользователей: t.me/ExampleSupport_bot`);
 });
     
 //Показывает колличество участников
