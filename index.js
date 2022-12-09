@@ -21,8 +21,8 @@ class User {
         this.user = fromId,
         this.queryData = 6,
         this.time = 4000,
-        this.num = 1,
-        this.msgId = 1,
+        this.num = 0,
+        this.msgId = 0,
         this.count = 0,
         this.record = 0
     }
@@ -72,7 +72,9 @@ class User {
             switch(queryData) {
                 case '1':
                     this.count = 0;
-                    ctx.telegram.editMessageText( this.user, this.msgId, this.msgId, this.num);
+                    if (this.user, this.msgId && this.msgId && this.num) {
+                        ctx.telegram.editMessageText(this.user, this.msgId, this.msgId, this.num);
+                    }
                     break;
                 case '3':
                     this.queryData = 3;

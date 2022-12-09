@@ -65,7 +65,12 @@ commands.command('time', (ctx) => {
 });
 
 commands.command('help', (ctx) => {
-    ctx.reply(`Замечания и пожелания по развитию игры пишите в наш бот поддержки пользователей: t.me/ExampleSupport_bot`);
+    try {
+        ctx.reply(`Замечания и пожелания по развитию игры пишите в наш бот поддержки пользователей: t.me/ExampleSupport_bot`);
+    } catch(err) {
+        console.error(err)
+    }
+
 });
 
 //Показывает рекорд
