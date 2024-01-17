@@ -108,7 +108,7 @@ commands.command('users', (ctx) => {
         let players = [];
         for (let value of arr) {
             players.push(`
-${users[value].name}: ${users[value].userName}`);
+${users[value].name}: ${users[value].userName} (${value})`);
         };
         ctx.telegram.sendMessage(ctx.from.id, `Игроков ${amount}, ${players}`);
     } catch (err) {

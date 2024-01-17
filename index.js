@@ -19,12 +19,13 @@ class User {
         this.userName = userName,
         this.name = name,
         this.user = fromId,
-        this.queryData = 6,
-        this.time = 4000,
+        this.queryData = 6, // длинна числа
+        this.time = 4000, // время показа числа
         this.num = 0,
         this.msgId = 0,
         this.count = 0,
-        this.record = 0
+        this.record = 0,
+        this.watched = false // Подсмотрен ли ответ
     }
 
     // Записывает рекорд
@@ -43,6 +44,7 @@ class User {
             ctx.telegram.sendMessage(this.user, this.num)
             .then((data) => { this.msgId = data.message_id })
             .then( setTimeout(() => {
+                this.watched = !this.watched;
                 ctx.telegram.editMessageText( this.user, this.msgId, this.msgId, 'Жги!').then((data) => {
                 ctx.telegram.editMessageReplyMarkup( this.user, this.msgId, this.msgId, JSON.stringify({
                     inline_keyboard: [
@@ -72,8 +74,10 @@ class User {
             switch(queryData) {
                 case '1':
                     this.count = 0;
-                    if (this.user, this.msgId && this.msgId && this.num) {
+                    console.log(this.user, this.msgId, this.num, (!this.watched))
+                    if (this.user && this.msgId && this.num && !this.watched) {
                         ctx.telegram.editMessageText(this.user, this.msgId, this.msgId, this.num);
+                        this.watched = !this.watched;
                     }
                     break;
                 case '3':
@@ -165,16 +169,21 @@ let arrayRandElement = function (arr) {
 //Ответ бота на введенное число
 let botAnswer = function (ctx, txt1, txt2, arr) {
     try {
-        ctx.telegram.sendAnimation(ctx.from.id, arrayRandElement(arr))
-        .then(() => {
-            ctx.telegram.sendMessage(ctx.from.id, `${txt1}`, {
-                reply_markup: JSON.stringify({
-                    inline_keyboard: [
-                        [new Btns(`${txt2}`, users[ctx.from.id].queryData)]
-                    ]
+        if (ctx) {
+            ctx.telegram.sendAnimation(ctx.from.id, arrayRandElement(arr))
+            .then(() => {
+                ctx.telegram.sendMessage(ctx.from.id, `${txt1}`, {
+                    reply_markup: JSON.stringify({
+                        inline_keyboard: [
+                            [new Btns(`${txt2}`, users[ctx.from.id].queryData)]
+                        ]
+                    })
                 })
             })
-        })
+        } else {
+            addUser(ctx.from.id, ctx.from.username, ctx.from.first_name);
+        }
+        
     }  catch(err) {
         console.error(err);
     }
